@@ -12,14 +12,20 @@ fn main() -> anyhow::Result<()> {
     loop {
         buf.clear();
         print!("λ ");
-        io::stdout().flush().unwrap();
+        io::stdout().flush()?;
         io::stdin()
             .read_line(&mut buf)
             .context("reading from stdin")?;
 
         let input = buf.trim_ascii();
-        match input {
+        let parts: Vec<_> = input.split_whitespace().collect();
+        let Some((cmd, args)) = parts.split_first() else {
+            continue;
+        };
+
+        match *cmd {
             "exit" => process::exit(0),
+            "echo" => println!("{}", args.join(" ")),
             _ => println!("{}: command not found", input),
         }
     }
