@@ -1,4 +1,7 @@
-use std::io::{self, Write};
+use std::{
+    io::{self, Write},
+    process,
+};
 
 use anyhow::Context;
 
@@ -13,6 +16,11 @@ fn main() -> anyhow::Result<()> {
         io::stdin()
             .read_line(&mut buf)
             .context("reading from stdin")?;
-        println!("{}: command not found", buf.trim());
+
+        let input = buf.trim_ascii();
+        match input {
+            "exit" => process::exit(0),
+            _ => println!("{}: command not found", input),
+        }
     }
 }
