@@ -1,13 +1,10 @@
-use std::{
-    io::{self, Write},
-    process,
-};
+mod builtins;
 
+use crate::builtins::Builtin;
 use anyhow::Context;
+use std::io::{self, Write};
 
 fn main() -> anyhow::Result<()> {
-    // TODO: Uncomment the code below to pass the first stage
-
     let mut buf = String::new();
     loop {
         buf.clear();
@@ -16,17 +13,14 @@ fn main() -> anyhow::Result<()> {
         io::stdin()
             .read_line(&mut buf)
             .context("reading from stdin")?;
-
-        let input = buf.trim_ascii();
-        let parts: Vec<_> = input.split_whitespace().collect();
-        let Some((cmd, args)) = parts.split_first() else {
+        let argv: Vec<_> = buf.trim_ascii().split_whitespace().collect();
+        if argv.is_empty() {
             continue;
-        };
+        }
 
-        match *cmd {
-            "exit" => process::exit(0),
-            "echo" => println!("{}", args.join(" ")),
-            _ => println!("{}: command not found", input),
+        match Builtin::try_from(argv.as_slice()) {
+            Ok(builtin) => builtin.run()?,
+            Err(e) => eprintln!("{e}"),
         }
     }
 }
