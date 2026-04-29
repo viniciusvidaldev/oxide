@@ -18,9 +18,9 @@ fn main() -> anyhow::Result<()> {
             continue;
         }
 
-        match Builtin::try_from(argv.as_slice()) {
-            Ok(builtin) => builtin.run()?,
-            Err(e) => eprintln!("{e}"),
+        let result = Builtin::try_from(argv.as_slice()).and_then(|b| b.run());
+        if let Err(e) = result {
+            eprintln!("{e}");
         }
     }
 }

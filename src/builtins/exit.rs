@@ -1,12 +1,13 @@
 use anyhow::{Result, anyhow};
 
-use crate::builtins::Command;
+use super::Command;
 
 pub struct Exit {
     code: u8,
 }
 
 impl Command for Exit {
+    const NAME: &'static str = "exit";
     fn parse(args: &[&str]) -> Result<Self> {
         let code = match args.first() {
             Some(arg) => arg

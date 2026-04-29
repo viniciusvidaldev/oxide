@@ -1,12 +1,15 @@
+mod echo;
+mod exit;
+mod r#type;
+
 use anyhow::bail;
 
 use echo::Echo;
 use exit::Exit;
-
-mod echo;
-mod exit;
+use r#type::Type;
 
 pub trait Command: Sized {
+    const NAME: &'static str;
     fn parse(args: &[&str]) -> anyhow::Result<Self>;
     fn run(&self) -> anyhow::Result<()>;
 }
@@ -14,6 +17,7 @@ pub trait Command: Sized {
 pub enum Builtin {
     Echo(Echo),
     Exit(Exit),
+    Type(Type),
 }
 
 impl TryFrom<&[&str]> for Builtin {
@@ -25,18 +29,22 @@ impl TryFrom<&[&str]> for Builtin {
             .expect("argv is never empty, checked in main");
 
         match *cmd {
-            "exit" => Exit::parse(args).map(Self::Exit),
-            "echo" => Echo::parse(args).map(Self::Echo),
+            Exit::NAME => Exit::parse(args).map(Self::Exit),
+            Echo::NAME => Echo::parse(args).map(Self::Echo),
+            Type::NAME => Type::parse(args).map(Self::Type),
             _ => bail!("unknown command: {cmd}"),
         }
     }
 }
 
 impl Builtin {
+    pub const NAMES: &[&str] = &[Exit::NAME, Echo::NAME, Type::NAME];
+
     pub fn run(&self) -> anyhow::Result<()> {
         match self {
             Self::Exit(cmd) => cmd.run(),
             Self::Echo(cmd) => cmd.run(),
+            Self::Type(cmd) => cmd.run(),
         }
     }
 }
