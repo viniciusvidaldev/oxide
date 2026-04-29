@@ -1,14 +1,17 @@
 mod builtins;
+mod config;
 
-use crate::builtins::Builtin;
 use anyhow::Context;
 use std::io::{self, Write};
+use {builtins::Builtin, config::Config};
 
 fn main() -> anyhow::Result<()> {
     let mut buf = String::new();
+
+    let user_config = Config::load();
     loop {
         buf.clear();
-        print!("λ ");
+        print!("{}", user_config.prompt);
         io::stdout().flush()?;
         io::stdin()
             .read_line(&mut buf)

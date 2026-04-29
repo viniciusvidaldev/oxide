@@ -6,3 +6,5 @@ description = "A tiny POSIX-ish shell written in Rust, built as a learning proje
 
 [dependencies]
 anyhow = "1.0.102"
+serde = { version = "1.0.228", features = ["derive"] }
+toml = "1.1.2"
