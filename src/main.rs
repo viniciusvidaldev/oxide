@@ -1,6 +1,7 @@
 mod builtins;
 mod config;
 mod dispatch;
+mod external;
 
 use anyhow::Context;
 use std::io::{self, Write};

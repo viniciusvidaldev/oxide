@@ -1,11 +1,15 @@
-use anyhow::bail;
+use std::path::PathBuf;
 
-use crate::builtins::{Builtin, Echo, Exit, Type};
+use crate::{
+    builtins::{Builtin, Echo, Exit, Type},
+    external::{External, path_lookup},
+};
 
 pub enum Dispatch {
     Echo(Echo),
     Exit(Exit),
     Type(Type),
+    External(External),
 }
 
 impl TryFrom<&[&str]> for Dispatch {
@@ -17,7 +21,7 @@ impl TryFrom<&[&str]> for Dispatch {
             Echo::NAME => Echo::parse(args).map(Self::Echo),
             Exit::NAME => Exit::parse(args).map(Self::Exit),
             Type::NAME => Type::parse(args).map(Self::Type),
-            _ => bail!("command not found: {name}"),
+            _ => External::from_name(name, args).map(Self::External),
         }
     }
 }
@@ -28,12 +32,14 @@ impl Dispatch {
             Self::Echo(c) => c.run(),
             Self::Exit(c) => c.run(),
             Self::Type(c) => c.run(),
+            Self::External(c) => c.run(),
         }
     }
 }
 
 pub enum Resolved {
     Builtin(&'static str),
+    External(PathBuf),
 }
 
 impl Resolved {
@@ -42,7 +48,7 @@ impl Resolved {
             Echo::NAME => Some(Resolved::Builtin(Echo::NAME)),
             Exit::NAME => Some(Resolved::Builtin(Exit::NAME)),
             Type::NAME => Some(Resolved::Builtin(Type::NAME)),
-            _ => None,
+            _ => path_lookup(name).map(Resolved::External),
         }
     }
 }

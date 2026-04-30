@@ -17,6 +17,7 @@ impl Builtin for Type {
         for name in &self.names {
             match Resolved::from_name(name) {
                 Some(Resolved::Builtin(n)) => println!("{n} is a shell builtin"),
+                Some(Resolved::External(p)) => println!("{name} is {}", p.display()),
                 None => bail!("{name}: not found"),
             }
         }
