@@ -4,17 +4,26 @@ mod dispatch;
 mod external;
 
 use anyhow::Context;
-use std::io::{self, Write};
+use std::{
+    env,
+    io::{self, Write},
+};
 
-use crate::{config::Config, dispatch::Dispatch};
+use crate::config::Config;
 
 fn main() -> anyhow::Result<()> {
     let mut buf = String::new();
 
     let user_config = Config::load();
+
     loop {
         buf.clear();
-        print!("{}", user_config.prompt);
+
+        let cwd = env::current_dir()
+            .map(|c| c.display().to_string())
+            .unwrap_or_else(|_| "?".into());
+
+        print!("{cwd} {}", user_config.prompt);
         io::stdout().flush()?;
         io::stdin()
             .read_line(&mut buf)
@@ -24,8 +33,7 @@ fn main() -> anyhow::Result<()> {
             continue;
         }
 
-        let result = Dispatch::try_from(argv.as_slice()).and_then(|b| b.run());
-        if let Err(e) = result {
+        if let Err(e) = dispatch::dispatch(&argv) {
             eprintln!("{e}");
         }
     }

@@ -4,33 +4,16 @@ use std::{
     path::{Path, PathBuf},
 };
 
-pub struct External {
-    bin_path: PathBuf,
-    args: Vec<String>,
-}
+use anyhow::{Result, bail};
 
-impl External {
-    pub fn from_name(name: &str, args: &[&str]) -> anyhow::Result<Self> {
-        let bin_path =
-            path_lookup(name).ok_or_else(|| anyhow::anyhow!("command not found: {}", name))?;
+pub fn run_external(program: &Path, args: &[&str]) -> Result<()> {
+    let status = std::process::Command::new(program).args(args).status()?;
 
-        Ok(Self {
-            bin_path,
-            args: args.iter().map(|&s| s.to_string()).collect(),
-        })
+    if !status.success() {
+        bail!("command failed with status: {}", status);
     }
 
-    pub fn run(&self) -> anyhow::Result<()> {
-        let status = std::process::Command::new(&self.bin_path)
-            .args(&self.args)
-            .status()?;
-
-        if !status.success() {
-            anyhow::bail!("command failed with status: {}", status);
-        }
-
-        Ok(())
-    }
+    Ok(())
 }
 
 pub fn path_lookup(name: &str) -> Option<PathBuf> {
@@ -42,7 +25,7 @@ pub fn path_lookup(name: &str) -> Option<PathBuf> {
 }
 
 fn is_executable(path: &Path) -> bool {
-    let metadata = match fs::metadata(&path) {
+    let metadata = match fs::metadata(path) {
         Ok(m) => m,
         Err(_) => return false,
     };

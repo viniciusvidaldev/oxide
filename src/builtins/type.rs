@@ -1,26 +1,17 @@
-use anyhow::bail;
+use anyhow::{Result, bail};
 
-use crate::{builtins::Builtin, dispatch::Resolved};
+use crate::dispatch::lookup;
+use crate::external::path_lookup;
 
-pub struct Type {
-    names: Vec<String>,
-}
-
-impl Builtin for Type {
-    const NAME: &'static str = "type";
-    fn parse(args: &[&str]) -> anyhow::Result<Self> {
-        let names: Vec<_> = args.iter().map(|s| s.to_string()).collect();
-        Ok(Self { names })
-    }
-
-    fn run(&self) -> anyhow::Result<()> {
-        for name in &self.names {
-            match Resolved::from_name(name) {
-                Some(Resolved::Builtin(n)) => println!("{n} is a shell builtin"),
-                Some(Resolved::External(p)) => println!("{name} is {}", p.display()),
-                None => bail!("{name}: not found"),
-            }
+pub fn run(args: &[&str]) -> Result<()> {
+    for name in args {
+        if let Some(b) = lookup(name) {
+            println!("{} is a shell builtin", b.name);
+        } else if let Some(p) = path_lookup(name) {
+            println!("{name} is {}", p.display());
+        } else {
+            bail!("{name}: not found");
         }
-        Ok(())
     }
+    Ok(())
 }
