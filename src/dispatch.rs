@@ -27,6 +27,6 @@ pub fn dispatch(argv: &[&str]) -> Result<()> {
     }
     match path_lookup(name) {
         Some(p) => run_external(&p, args),
-        None => bail!("command not found: {name}"),
+        None => bail!("oxide: Command '{name}' not found"),
     }
 }

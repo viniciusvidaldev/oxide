@@ -10,7 +10,7 @@ pub fn run(args: &[&str]) -> Result<()> {
         } else if let Some(p) = path_lookup(name) {
             println!("{name} is {}", p.display());
         } else {
-            bail!("{name}: not found");
+            bail!("type: Could not find '{name}'");
         }
     }
     Ok(())

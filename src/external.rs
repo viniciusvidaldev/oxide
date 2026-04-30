@@ -10,7 +10,7 @@ pub fn run_external(program: &Path, args: &[&str]) -> Result<()> {
     let status = std::process::Command::new(program).args(args).status()?;
 
     if !status.success() {
-        bail!("command failed with status: {}", status);
+        bail!("oxide: External command failed with status '{}'", status);
     }
 
     Ok(())

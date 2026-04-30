@@ -27,7 +27,7 @@ fn main() -> anyhow::Result<()> {
         io::stdout().flush()?;
         io::stdin()
             .read_line(&mut buf)
-            .context("reading from stdin")?;
+            .context("oxide: Could not read from stdin")?;
         let argv: Vec<_> = buf.trim_ascii().split_whitespace().collect();
         if argv.is_empty() {
             continue;
