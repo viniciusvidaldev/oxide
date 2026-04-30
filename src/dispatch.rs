@@ -1,6 +1,6 @@
 use anyhow::{Result, bail};
 
-use crate::builtins::{cd, echo, exit, r#type};
+use crate::builtins::{cd, echo, exit, pwd, r#type};
 use crate::external::{path_lookup, run_external};
 
 type BuiltinFn = fn(&[&str]) -> Result<()>;
@@ -16,6 +16,7 @@ const BUILTINS: &[Builtin] = &[
     Builtin { name: "echo", func: echo::run },
     Builtin { name: "exit", func: exit::run },
     Builtin { name: "type", func: r#type::run },
+    Builtin { name: "pwd", func: pwd::run },
 ];
 
 pub fn lookup(name: &str) -> Option<&'static Builtin> {
