@@ -4,15 +4,10 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use anyhow::{Result, bail};
+use anyhow::Result;
 
 pub fn run_external(program: &Path, args: &[&str]) -> Result<()> {
-    let status = std::process::Command::new(program).args(args).status()?;
-
-    if !status.success() {
-        bail!("oxide: External command failed with status '{}'", status);
-    }
-
+    std::process::Command::new(program).args(args).status()?;
     Ok(())
 }
 
