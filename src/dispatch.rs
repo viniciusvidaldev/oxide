@@ -1,6 +1,6 @@
 use anyhow::{Result, bail};
 
-use crate::builtins::{echo, exit, r#type};
+use crate::builtins::{cd, echo, exit, r#type};
 use crate::external::{path_lookup, run_external};
 
 type BuiltinFn = fn(&[&str]) -> Result<()>;
@@ -10,7 +10,9 @@ pub struct Builtin {
     pub func: BuiltinFn,
 }
 
+#[rustfmt::skip]
 const BUILTINS: &[Builtin] = &[
+    Builtin { name: "cd", func: cd::run },
     Builtin { name: "echo", func: echo::run },
     Builtin { name: "exit", func: exit::run },
     Builtin { name: "type", func: r#type::run },

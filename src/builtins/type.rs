@@ -1,4 +1,4 @@
-use anyhow::{Result, bail};
+use anyhow::Result;
 
 use crate::dispatch::lookup;
 use crate::external::path_lookup;
@@ -10,7 +10,7 @@ pub fn run(args: &[&str]) -> Result<()> {
         } else if let Some(p) = path_lookup(name) {
             println!("{name} is {}", p.display());
         } else {
-            bail!("type: Could not find '{name}'");
+            eprintln!("type: Could not find '{name}'");
         }
     }
     Ok(())
