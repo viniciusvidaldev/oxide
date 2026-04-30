@@ -1,9 +1,11 @@
 mod builtins;
 mod config;
+mod dispatch;
 
 use anyhow::Context;
 use std::io::{self, Write};
-use {builtins::Builtin, config::Config};
+
+use crate::{config::Config, dispatch::Dispatch};
 
 fn main() -> anyhow::Result<()> {
     let mut buf = String::new();
@@ -21,7 +23,7 @@ fn main() -> anyhow::Result<()> {
             continue;
         }
 
-        let result = Builtin::try_from(argv.as_slice()).and_then(|b| b.run());
+        let result = Dispatch::try_from(argv.as_slice()).and_then(|b| b.run());
         if let Err(e) = result {
             eprintln!("{e}");
         }

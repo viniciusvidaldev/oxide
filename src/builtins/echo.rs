@@ -1,12 +1,12 @@
 use anyhow::Result;
 
-use super::Command;
+use crate::builtins::Builtin;
 
 pub struct Echo {
     args: Vec<String>,
 }
 
-impl Command for Echo {
+impl Builtin for Echo {
     const NAME: &'static str = "echo";
     fn parse(args: &[&str]) -> Result<Self> {
         Ok(Self {

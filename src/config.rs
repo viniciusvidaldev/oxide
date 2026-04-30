@@ -22,7 +22,6 @@ impl Default for Config {
 impl Config {
     pub fn load() -> Self {
         let path = get_config_path();
-
         let content = match fs::read_to_string(&path) {
             Ok(s) => s,
             Err(e) if e.kind() == io::ErrorKind::NotFound => return Self::default(),
