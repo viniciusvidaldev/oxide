@@ -1,6 +1,8 @@
 use anyhow::{Result, anyhow};
 
 pub fn run(args: &[&str]) -> Result<()> {
+    anyhow::ensure!(args.len() <= 1, "pwd: too many arguments");
+
     let code = match args.first() {
         Some(arg) => arg
             .parse::<u8>()
