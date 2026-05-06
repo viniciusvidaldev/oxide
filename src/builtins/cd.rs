@@ -1,6 +1,6 @@
 use std::{
     env::{self, set_current_dir},
-    io,
+    io::{self, Write},
     path::PathBuf,
 };
 
@@ -22,10 +22,10 @@ fn expand_tilde(raw: &str) -> Result<PathBuf> {
     Ok(PathBuf::from(raw))
 }
 
-pub fn run(args: &[&str]) -> Result<()> {
+pub fn run(args: &[String], _out: &mut dyn Write) -> Result<()> {
     anyhow::ensure!(args.len() <= 1, "cd: Too many args for cd command");
 
-    let raw = args.first().copied().unwrap_or("~");
+    let raw = args.first().map(String::as_str).unwrap_or("~");
     let target = expand_tilde(raw)?;
 
     if let Err(e) = set_current_dir(&target) {

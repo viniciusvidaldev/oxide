@@ -2,6 +2,7 @@ mod builtins;
 mod config;
 mod dispatch;
 mod external;
+mod parser;
 
 use anyhow::Context;
 use std::{
@@ -9,7 +10,7 @@ use std::{
     io::{self, Write},
 };
 
-use crate::config::Config;
+use crate::{config::Config, parser::Statement};
 
 fn main() -> anyhow::Result<()> {
     let mut buf = String::new();
@@ -28,12 +29,21 @@ fn main() -> anyhow::Result<()> {
         io::stdin()
             .read_line(&mut buf)
             .context("oxide: Could not read from stdin")?;
-        let argv: Vec<_> = buf.trim_ascii().split_whitespace().collect();
-        if argv.is_empty() {
+
+        let trimmed = buf.trim();
+        if trimmed.is_empty() {
             continue;
         }
 
-        if let Err(e) = dispatch::dispatch(&argv) {
+        let statement = match Statement::from_buf(trimmed) {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!("{e}");
+                continue;
+            }
+        };
+
+        if let Err(e) = dispatch::dispatch(&statement) {
             eprintln!("{e}");
         }
     }

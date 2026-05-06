@@ -2,12 +2,13 @@ use std::{
     env, fs,
     os::unix::fs::PermissionsExt,
     path::{Path, PathBuf},
+    process::{Command, Stdio},
 };
 
 use anyhow::Result;
 
-pub fn run_external(program: &Path, args: &[&str]) -> Result<()> {
-    std::process::Command::new(program).args(args).status()?;
+pub fn run_external(program: &Path, args: &[String], stdout: Stdio) -> Result<()> {
+    Command::new(program).args(args).stdout(stdout).status()?;
     Ok(())
 }
 

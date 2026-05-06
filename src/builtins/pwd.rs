@@ -1,8 +1,8 @@
-use std::env;
+use std::{env, io::Write};
 
 use anyhow::Result;
 
-pub fn run(args: &[&str]) -> Result<()> {
+pub fn run(args: &[String], out: &mut dyn Write) -> Result<()> {
     anyhow::ensure!(
         args.is_empty(),
         "pwd: Expected 0 arguments, got {}",
@@ -10,6 +10,6 @@ pub fn run(args: &[&str]) -> Result<()> {
     );
 
     let cwd = env::current_dir()?;
-    println!("{}", cwd.display());
+    writeln!(out, "{}", cwd.display())?;
     Ok(())
 }

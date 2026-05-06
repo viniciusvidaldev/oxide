@@ -1,7 +1,9 @@
+use std::io::Write;
+
 use anyhow::{Result, anyhow};
 
-pub fn run(args: &[&str]) -> Result<()> {
-    anyhow::ensure!(args.len() <= 1, "pwd: too many arguments");
+pub fn run(args: &[String], _out: &mut dyn Write) -> Result<()> {
+    anyhow::ensure!(args.len() <= 1, "exit: Too many arguments");
 
     let code = match args.first() {
         Some(arg) => arg

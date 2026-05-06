@@ -1,16 +1,18 @@
+use std::io::Write;
+
 use anyhow::Result;
 
 use crate::dispatch::lookup;
 use crate::external::path_lookup;
 
-pub fn run(args: &[&str]) -> Result<()> {
+pub fn run(args: &[String], out: &mut dyn Write) -> Result<()> {
     for name in args {
         if let Some(b) = lookup(name) {
-            println!("{} is a shell builtin", b.name);
+            writeln!(out, "{} is a shell builtin", b.name)?;
         } else if let Some(p) = path_lookup(name) {
-            println!("{name} is {}", p.display());
+            writeln!(out, "{name} is {}", p.display())?;
         } else {
-            eprintln!("type: Could not find '{name}'");
+            writeln!(out, "type: Could not find '{name}'")?;
         }
     }
     Ok(())
